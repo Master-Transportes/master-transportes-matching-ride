@@ -9,7 +9,9 @@ export const CREATE_RIDE_LUA = `
     "pickupLat", ARGV[2],
     "pickupLng", ARGV[3],
     "dropoffLat", ARGV[4],
-    "dropoffLng", ARGV[5]
+    "dropoffLng", ARGV[5],
+    "originName", ARGV[8],
+    "destinationName", ARGV[9]
   )
   redis.call("EXPIRE", KEYS[1], ARGV[7])
 

@@ -21,6 +21,8 @@ export const offerPublisher = {
       pickupLng: event.pickupLng,
       dropoffLat: event.dropoffLat,
       dropoffLng: event.dropoffLng,
+      originName: event.originName,
+      destinationName: event.destinationName,
       offerExpiresAt: event.offerExpiresAt,
       timestamp: event.timestamp,
     });

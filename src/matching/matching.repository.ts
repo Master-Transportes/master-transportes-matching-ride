@@ -18,6 +18,8 @@ export const matchingRepository = {
         event.pickupLng.toString(),
         event.dropoffLat.toString(),
         event.dropoffLng.toString(),
+        event.originName,
+        event.destinationName,
         env.MATCHING_INITIAL_RADIUS.toString(),
         String(MATCHING.INITIAL_TTL),
       ),

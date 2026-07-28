@@ -99,7 +99,7 @@ async function resolvePositions(
       "lastLocationUpdate",
     )) as [string | null, string | null];
 
-    if (status === "busy" || status === "offline") continue;
+    if (!status || status === "busy" || status === "offline") continue;
 
     const distanceMeters = haversineDistance(
       pickupLat,
@@ -137,6 +137,7 @@ export const h3Service = {
         status: "available",
         lastLocationUpdate: Date.now().toString(),
       })
+      .expire(REDIS.DRIVER(driverId), 300)
       .exec();
   },
 
@@ -151,15 +152,13 @@ export const h3Service = {
       cell: newCell,
       lastLocationUpdate: Date.now().toString(),
     });
+    pipeline.expire(REDIS.DRIVER(driverId), 300);
 
     if (oldCell && oldCell !== newCell) {
       pipeline.srem(REDIS.DRIVERS_H3(oldCell), driverId);
     }
     if (!oldCell || oldCell !== newCell) {
       pipeline.sadd(REDIS.DRIVERS_H3(newCell), driverId);
-    }
-    if (!oldCell || oldCell !== newCell) {
-      pipeline.sadd(`drivers:h3:${newCell}`, driverId);
     }
 
     await pipeline.exec();
@@ -198,7 +197,6 @@ export const h3Service = {
     const maxK = radiusToK(params.radiusMeters);
     const excluded = new Set(params.excludedDrivers ?? []);
 
-    // Check origin cell first (ring 0)
     const originCandidates = await withRetry(() => getCandidatesInCells([originHex], excluded));
     if (originCandidates.length > 0) {
       const result = await withRetry(() =>
@@ -213,7 +211,6 @@ export const h3Service = {
       if (result) return result;
     }
 
-    // Expand outward ring by ring
     for (let k = 1; k <= maxK; k++) {
       let cells: string[];
       try {

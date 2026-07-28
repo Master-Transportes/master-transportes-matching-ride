@@ -5,6 +5,8 @@ export interface RideRequestedEvent {
   pickupLng: number;
   dropoffLat: number;
   dropoffLng: number;
+  originName: string;
+  destinationName: string;
   timestamp: string;
 }
 
@@ -36,6 +38,8 @@ export interface RideNewOfferEvent {
   pickupLng: number;
   dropoffLat: number;
   dropoffLng: number;
+  originName: string;
+  destinationName: string;
   offerExpiresAt: string;
   timestamp: string;
 }

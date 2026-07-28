@@ -55,7 +55,7 @@ export const matchingService = {
 
     const rideData = await matchingRepository.getRideData(event.rideId);
 
-    await publishRideDriverAccepted({
+    await publishRideDriverAccepted({ 
       rideId: event.rideId,
       driverId: event.driverId,
       passengerId: rideData.passengerId ?? "",
@@ -180,6 +180,8 @@ export const matchingService = {
             pickupLng,
             dropoffLat: Number(rideData.dropoffLat ?? 0),
             dropoffLng: Number(rideData.dropoffLng ?? 0),
+            originName: rideData.originName ?? '',
+            destinationName: rideData.destinationName ?? '',
             timestamp: new Date().toISOString(),
           };
 

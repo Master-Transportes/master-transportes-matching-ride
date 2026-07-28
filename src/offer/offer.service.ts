@@ -26,6 +26,8 @@ export const offerService = {
       pickupLng: event.pickupLng,
       dropoffLat: event.dropoffLat,
       dropoffLng: event.dropoffLng,
+      originName: event.originName,
+      destinationName: event.destinationName,
       offerExpiresAt: new Date(expiresAt).toISOString(),
       timestamp: new Date().toISOString(),
     });
