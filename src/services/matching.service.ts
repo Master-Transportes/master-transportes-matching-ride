@@ -103,6 +103,8 @@ export function createMatchingService(deps: MatchingServiceDeps): IMatchingServi
         },
         timestamp: new Date().toISOString(),
       });
+
+      await deps.matchingRepository.deleteRideState(rideId);
     } finally {
       await deps.rideLock.release(lock);
     }
@@ -160,6 +162,8 @@ export function createMatchingService(deps: MatchingServiceDeps): IMatchingServi
         },
         timestamp: new Date().toISOString(),
       });
+
+      await deps.matchingRepository.deleteRideState(event.rideId);
     },
 
     async handleOfferRejected(event: RideOfferRejectedEvent): Promise<void> {
@@ -213,6 +217,7 @@ export function createMatchingService(deps: MatchingServiceDeps): IMatchingServi
     },
 
     async handleRideCancelled(event: RideCancelledEvent): Promise<void> {
+      const matchingState = await deps.matchingRepository.getMatchingField(event.rideId, "state");
       const currentOfferId = await deps.matchingRepository.getMatchingField(
         event.rideId,
         "currentOfferId",
@@ -239,12 +244,15 @@ export function createMatchingService(deps: MatchingServiceDeps): IMatchingServi
             { offerId: currentOfferId, reason: cancelResult.reason },
             `Ride ${event.rideId} cancel failed`,
           );
-          return;
         }
       }
 
       const v = await getVersion(deps.matchingRepository, event.rideId);
       logger.info(`Ride ${event.rideId} v${v}: → CANCELLED`);
+
+      if (matchingState !== "MATCHED") {
+        await deps.matchingRepository.deleteRideState(event.rideId);
+      }
 
       await deps.rideEventPublisher.publishRideMatchingCancelled({
         rideId: event.rideId,

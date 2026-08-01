@@ -10,6 +10,7 @@ import { createRedisRideLock } from "./implementations/services/redis-ride-lock.
 import { createRedisMatchingRepository } from "./implementations/repositories/redis-matching.repository.js";
 import { createRedisOfferRepository } from "./implementations/repositories/redis-offer.repository.js";
 import { createRedisDriverGeoRepository } from "./implementations/repositories/redis-driver-geo.repository.js";
+import { startGeoIndexJanitor } from "./implementations/services/geo-index-janitor.service.js";
 import { createDriverGeoService } from "./services/driver-geo.service.js";
 import { createOfferService } from "./services/offer.service.js";
 import { createMatchingService } from "./services/matching.service.js";
@@ -25,7 +26,7 @@ export function buildApplication() {
   const rideLock = createRedisRideLock(redis);
   const matchingRepository = createRedisMatchingRepository(redis, env);
   const offerRepository = createRedisOfferRepository(redis);
-  const geoRepository = createRedisDriverGeoRepository(redis, env);
+  const geoRepository = createRedisDriverGeoRepository(redis);
 
   const driverGeoService = createDriverGeoService({ env, geoRepository });
   const offerService = createOfferService({ env, offerRepository, offerPublisher, timeoutService });
@@ -41,11 +42,14 @@ export function buildApplication() {
 
   const consumerDeps = { matchingService, offerService };
 
+  let geoJanitor: NodeJS.Timeout | undefined;
+
   return {
     async start(): Promise<void> {
       logger.info("Starting");
 
       await connectRedis();
+      geoJanitor = startGeoIndexJanitor(redis);
       await initRabbitMQ();
       await registerAll(consumerDeps);
 
@@ -68,6 +72,7 @@ export function buildApplication() {
     registerShutdown(): void {
       const shutdown = async () => {
         logger.info("Shutting down gracefully...");
+        if (geoJanitor) clearInterval(geoJanitor);
         timeoutService.cancelAll();
         await closeChannel();
         await closeConnection();

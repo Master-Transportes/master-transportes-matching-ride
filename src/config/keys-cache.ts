@@ -17,8 +17,6 @@ export const DRIVER_KEYS = {
   LOCATION_SET: "drivers:location",
   /** Índice H3: set de motoristas em uma célula */
   H3_CELL: (cell: string) => `drivers:h3:${cell}`,
-  /** Perfil do motorista (hash, TTL curto) */
-  PROFILE: (driverId: string) => `driver:${driverId}`,
   /** Localização individual do motorista (usado pelo serviço de localização) */
   LOCATION: (driverId: string) => `driver:${driverId}:location`,
 } as const;

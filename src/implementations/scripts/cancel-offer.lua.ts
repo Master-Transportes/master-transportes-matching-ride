@@ -10,7 +10,11 @@ export const CANCEL_OFFER_LUA = `
 
   local driverId = redis.call("HGET", KEYS[1], "driverId")
   if driverId then
-    redis.call("HSET", "driver:" .. driverId, "status", "available")
+    local currentStatus = redis.call("HGET", "driver:" .. driverId .. ":location", "status")
+    if currentStatus ~= "offline" then
+      redis.call("HSET", "driver:" .. driverId .. ":location", "status", "available")
+      redis.call("EXPIRE", "driver:" .. driverId .. ":location", 300)
+    end
   end
 
   redis.call("HSET", KEYS[1], "status", "cancelled")

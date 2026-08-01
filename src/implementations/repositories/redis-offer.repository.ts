@@ -39,7 +39,8 @@ export function createRedisOfferRepository(redis: Redis): IOfferRepository {
         .sadd(RIDE_KEYS.CONTACTED_DRIVERS(rideId), driverId)
         .expire(RIDE_KEYS.MATCHING_STATE(rideId), 3600)
         .expire(RIDE_KEYS.CONTACTED_DRIVERS(rideId), 3600)
-        .hset(DRIVER_KEYS.PROFILE(driverId), "status", "busy")
+        .hset(DRIVER_KEYS.LOCATION(driverId), "status", "busy")
+        .expire(DRIVER_KEYS.LOCATION(driverId), 300)
         .exec();
     },
 
