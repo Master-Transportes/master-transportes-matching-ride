@@ -1,6 +1,7 @@
 import "dotenv/config";
 import { Redis } from "ioredis";
 import { latLngToCell } from "h3-js";
+import { DRIVER_KEYS } from "../src/config/keys-cache.js";
 
 const REDIS_URL = process.env.REDIS_URL ?? "redis://localhost:6379";
 
@@ -25,9 +26,9 @@ try {
 
   await redis
     .pipeline()
-    .geoadd("drivers:location", lng, lat, driverId)
-    .sadd(`drivers:h3:${cell}`, driverId)
-    .hset(`driver:${driverId}`, {
+    .geoadd(DRIVER_KEYS.LOCATION_SET, lng, lat, driverId)
+    .sadd(DRIVER_KEYS.H3_CELL(cell), driverId)
+    .hset(DRIVER_KEYS.PROFILE(driverId), {
       cell,
       status: "available",
       lastLocationUpdate: Date.now().toString(),

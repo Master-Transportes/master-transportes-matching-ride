@@ -1,12 +1,14 @@
+export interface RidePoint {
+  name: string;
+  lat: number;
+  lng: number;
+}
+
 export interface RideRequestedEvent {
   rideId: string;
   passengerId: string;
-  pickupLat: number;
-  pickupLng: number;
-  dropoffLat: number;
-  dropoffLng: number;
-  originName: string;
-  destinationName: string;
+  origin: RidePoint;
+  destination: RidePoint;
   timestamp: string;
 }
 
@@ -24,22 +26,12 @@ export interface RideOfferRejectedEvent {
   timestamp: string;
 }
 
-export interface RideOfferExpiredEvent {
-  rideId: string;
-  offerId: string;
-  timestamp: string;
-}
-
 export interface RideNewOfferEvent {
   rideId: string;
   offerId: string;
   driverId: string;
-  pickupLat: number;
-  pickupLng: number;
-  dropoffLat: number;
-  dropoffLng: number;
-  originName: string;
-  destinationName: string;
+  origin: RidePoint;
+  destination: RidePoint;
   offerExpiresAt: string;
   timestamp: string;
 }
@@ -48,10 +40,8 @@ export interface RideDriverAcceptedEvent {
   rideId: string;
   driverId: string;
   passengerId: string;
-  pickupLat: number;
-  pickupLng: number;
-  dropoffLat: number;
-  dropoffLng: number;
+  origin: RidePoint;
+  destination: RidePoint;
   timestamp: string;
 }
 
@@ -71,8 +61,7 @@ export interface RideMatchingCancelledEvent {
 export interface RideNoDriversEvent {
   rideId: string;
   passengerId: string;
-  pickupLat: number;
-  pickupLng: number;
+  origin: RidePoint;
   timestamp: string;
 }
 

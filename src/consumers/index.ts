@@ -1,6 +1,16 @@
-export { register as registerRideRequested } from "./rideRequested.consumer.js";
-export { register as registerOfferAccepted } from "./rideOfferAccepted.consumer.js";
-export { register as registerOfferRejected } from "./rideOfferRejected.consumer.js";
-export { register as registerOfferExpired } from "./rideOfferExpired.consumer.js";
-export { register as registerOfferTimeout } from "./rideOfferTimeout.consumer.js";
-export { register as registerRideCancelled } from "./rideCancelled.consumer.js";
+import type { ConsumerDeps } from "./consumer-deps.js";
+import { register as registerRideRequested } from "./rideRequested.consumer.js";
+import { register as registerOfferAccepted } from "./rideOfferAccepted.consumer.js";
+import { register as registerOfferRejected } from "./rideOfferRejected.consumer.js";
+import { register as registerOfferExpired } from "./rideOfferExpired.consumer.js";
+import { register as registerOfferTimeout } from "./rideOfferTimeout.consumer.js";
+import { register as registerRideCancelled } from "./rideCancelled.consumer.js";
+
+export async function registerAll(deps: ConsumerDeps): Promise<void> {
+  await registerRideRequested(deps);
+  await registerOfferAccepted(deps);
+  await registerOfferRejected(deps);
+  await registerOfferExpired(deps);
+  await registerOfferTimeout(deps);
+  await registerRideCancelled(deps);
+}

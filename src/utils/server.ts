@@ -1,6 +1,6 @@
 import http from "http";
-import { redis } from "../redis/client.js";
-import { getConnection } from "../rabbitmq/connection.js";
+import { redis } from "../infra/redis/client.js";
+import { getConnection } from "../infra/rabbitmq/connection.js";
 import { logger } from "./logger.js";
 import { env } from "../config/env.js";
 
@@ -21,21 +21,29 @@ export function startServer(): void {
 }
 
 async function handleHealth(res: http.ServerResponse): Promise<void> {
-  let redisOk = false;
-  let rabbitOk = false;
-
-  try {
-    await redis.ping();
-    redisOk = true;
-  } catch {}
-
-  try {
-    const conn = await getConnection();
-    if (conn) rabbitOk = true;
-  } catch {}
+  const redisOk = await checkRedis();
+  const rabbitOk = await checkRabbit();
 
   const status = redisOk && rabbitOk ? "ok" : "degraded";
 
   res.writeHead(200, { "Content-Type": "application/json" });
   res.end(JSON.stringify({ status, redis: redisOk, rabbitmq: rabbitOk }));
+}
+
+async function checkRedis(): Promise<boolean> {
+  try {
+    await redis.ping();
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+async function checkRabbit(): Promise<boolean> {
+  try {
+    const conn = await getConnection();
+    return conn !== null;
+  } catch {
+    return false;
+  }
 }
