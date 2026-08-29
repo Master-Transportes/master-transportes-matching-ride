@@ -21,7 +21,7 @@ export function createOfferPublisher(gateway: IGatewayPublisher): IOfferPublishe
         offerId: event.offerId,
         origin: event.origin,
         destination: event.destination,
-        offerExpiresAt: event.offerExpiresAt,
+        expiresInSeconds: event.expiresInSeconds,
         timestamp: event.timestamp,
       });
     },

@@ -32,7 +32,7 @@ export interface RideNewOfferEvent {
   driverId: string;
   origin: RidePoint;
   destination: RidePoint;
-  offerExpiresAt: string;
+  expiresInSeconds: number;
   timestamp: string;
 }
 

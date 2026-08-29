@@ -38,7 +38,7 @@ export function createOfferService(deps: OfferServiceDeps): IOfferService {
         driverId: driver.driverId,
         origin: event.origin,
         destination: event.destination,
-        offerExpiresAt: new Date(expiresAt).toISOString(),
+        expiresInSeconds: deps.env.OFFER_TIMEOUT_SECONDS,
         timestamp: new Date().toISOString(),
       });
 
